@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nova AI Analyst Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body class="dashboard-body">
+
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <h2>🚀 Nova AI Analyst</h2>
+
+            <p>Business Intelligence Platform</p>
+
+            <span class="version-badge">
+                Version 1.0
+            </span>
+
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li class="active-menu-item">
+                🏠 Dashboard
+            </li>
+
+            <li>
+                📂 Upload Dataset
+            </li>
+
+            <li>
+                📊 Analytics
+                <span class="menu-status">Live</span>
+            </li>
+
+            <li>
+                🤖 AI Insights
+                <span class="menu-status">Live</span>
+            </li>
+
+            <li>
+                📄 PDF Reports
+                <span class="menu-status coming-soon-small">Soon</span>
+            </li>
+
+            <li>
+                ⚙️ Settings
+                <span class="menu-status coming-soon-small">Soon</span>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer">
+
+            <p>Powered by Groq AI</p>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <main class="dashboard-content">
+
+        <!-- Dashboard Header -->
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <span class="dashboard-label">
+                    AI-Powered Analytics
+                </span>
+
+                <h1>Business Intelligence Dashboard</h1>
+
+                <p>
+                    Upload a CSV or Excel dataset to generate statistics,
+                    executive insights and interactive business visualizations.
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('home') }}"
+               class="back-home-link">
+
+                ← Back to Home
+
+            </a>
+
+        </header>
+
+        <!-- Upload Area -->
+
+        <section class="upload-box">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>📂 Upload Dataset</h2>
+
+                    <p>
+                        Supported formats: CSV, XLSX and XLS
+                    </p>
+
+                </div>
+
+            </div>
+
+            <form action="/upload"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <input
+                    type="file"
+                    name="dataset"
+                    accept=".csv,.xlsx,.xls"
+                    required>
+
+                <button type="submit">
+                    Analyze Dataset
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Statistics -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <h3>Rows</h3>
+
+                    <p>{{ rows | default(0) }}</p>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📋
+                </div>
+
+                <div>
+
+                    <h3>Columns</h3>
+
+                    <p>{{ columns | default(0) }}</p>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <h3>Missing Values</h3>
+
+                    <p>{{ missing | default(0) }}</p>
+
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ♻️
+                </div>
+
+                <div>
+
+                    <h3>Duplicates</h3>
+
+                    <p>{{ duplicates | default(0) }}</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Dataset Preview -->
+
+        {% if preview_table %}
+
+        <section class="dashboard-card dataset-preview-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>📋 Dataset Preview</h2>
+
+                    <p>
+                        Showing the first 10 rows of the uploaded dataset.
+                    </p>
+
+                </div>
+
+                <span class="feature-status live-status">
+                    Loaded
+                </span>
+
+            </div>
+
+            <div class="table-scroll">
+
+                {{ preview_table | safe }}
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+        <!-- AI Insights -->
+
+        <section class="dashboard-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>🤖 AI Business Insights</h2>
+
+                    <p>
+                        Executive-level analysis generated from your uploaded dataset.
+                    </p>
+
+                </div>
+
+                <span class="feature-status live-status">
+                    AI Generated
+                </span>
+
+            </div>
+
+            <div class="ai-insights">
+
+                {{ insights | safe }}
+
+            </div>
+
+        </section>
+
+        <!-- Business Visualizations -->
+
+        <section class="dashboard-card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>📈 Business Visualizations</h2>
+
+                    <p>
+                        Interactive charts automatically created from compatible columns.
+                    </p>
+
+                </div>
+
+                {% if charts %}
+
+                    <span class="feature-status live-status">
+                        Interactive
+                    </span>
+
+                {% else %}
+
+                    <span class="feature-status waiting-status">
+                        Waiting for Data
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            <div id="chart-container">
+
+                {% if charts %}
+
+                    {% for chart in charts.values() %}
+
+                        <div class="chart-card">
+
+                            {{ chart | safe }}
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <span class="empty-state-icon">
+                            📊
+                        </span>
+
+                        <h3>No visualizations yet</h3>
+
+                        <p>
+                            Upload a compatible dataset to generate interactive charts.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+        <!-- Executive Report -->
+
+        <section class="dashboard-card report-coming-soon">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>📄 Executive PDF Report</h2>
+
+                    <p>
+                        Export the dataset summary, AI insights and visualizations
+                        as a professional business report.
+                    </p>
+
+                </div>
+
+                <span class="feature-status coming-soon-status">
+                    Coming Soon
+                </span>
+
+            </div>
+
+            <div class="report-preview">
+
+                <div class="report-preview-icon">
+                    📑
+                </div>
+
+                <div>
+
+                    <h3>Professional PDF Export</h3>
+
+                    <p>
+                        This feature is planned for Nova AI Analyst Web Version 2.0.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button disabled>
+                Download Report — Coming Soon
+            </button>
+
+        </section>
+
+        <!-- Upcoming Features -->
+
+        <section class="dashboard-card upcoming-features">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>🚀 Coming in Version 2.0</h2>
+
+                    <p>
+                        Planned capabilities for the next Nova AI Analyst release.
+                    </p>
+
+                </div>
+
+                <span class="feature-status roadmap-status">
+                    Roadmap
+                </span>
+
+            </div>
+
+            <div class="coming-soon-grid">
+
+                <div class="coming-soon-card">
+
+                    <span>💬</span>
+
+                    <h3>Chat With Data</h3>
+
+                    <p>
+                        Ask natural-language questions about uploaded datasets.
+                    </p>
+
+                </div>
+
+                <div class="coming-soon-card">
+
+                    <span>📈</span>
+
+                    <h3>Forecasting</h3>
+
+                    <p>
+                        Generate predictive trends and future business projections.
+                    </p>
+
+                </div>
+
+                <div class="coming-soon-card">
+
+                    <span>📊</span>
+
+                    <h3>Advanced Dashboards</h3>
+
+                    <p>
+                        Create more detailed and customizable business visualizations.
+                    </p>
+
+                </div>
+
+                <div class="coming-soon-card">
+
+                    <span>📄</span>
+
+                    <h3>PDF Reports</h3>
+
+                    <p>
+                        Download executive-ready reports containing insights and charts.
+                    </p>
+
+                </div>
+
+                <div class="coming-soon-card">
+
+                    <span>🧠</span>
+
+                    <h3>Advanced AI Insights</h3>
+
+                    <p>
+                        Receive deeper domain-aware analysis and strategic recommendations.
+                    </p>
+
+                </div>
+
+                <div class="coming-soon-card">
+
+                    <span>📥</span>
+
+                    <h3>Power BI Export</h3>
+
+                    <p>
+                        Prepare analyzed data for use in external BI platforms.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Dashboard Footer -->
+
+        <footer class="dashboard-footer">
+
+            <div>
+
+                <h3>Nova AI Analyst v1.0</h3>
+
+                <p>
+                    AI-Powered Business Intelligence Platform
+                </p>
+
+            </div>
+
+            <div class="dashboard-footer-details">
+
+                <p>
+                    Built by Edet Simon
+                </p>
+
+                <p>
+                    Powered by Flask • Pandas • Plotly • Groq AI
+                </p>
+
+            </div>
+
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
